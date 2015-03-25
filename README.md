@@ -2,6 +2,7 @@ puppet-cloudbackup
 ==================
 
 Rackspace Cloud Backup Puppet Module
+Debian version, forked from https://github.com/avatarnewyork/puppet-cloudbackup
 
 ## Module Installation
 
