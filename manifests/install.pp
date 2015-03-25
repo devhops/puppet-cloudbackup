@@ -1,17 +1,24 @@
+# Configures repos and things for clouddrive install
 class cloudbackup::install {
-  yumrepo {'drivesrvr':
-    enabled  => 1,
-    gpgcheck => 0,
-    baseurl  => 'http://agentrepo.drivesrvr.com/redhat/',
-    descr    => 'drivesrvr'
+  file { '/etc/apt/sources.list.d/driveclient.list':
+  source => 'puppet://puppet:/site-modules/photoventureuk/files/driveclient.list',
+  ensure => present;
+      '/etc/apt/trusted.gpg':
+  source => 'puppet://puppet:/site-modules/photoventureuk/files/trusted.gpg',
   }
+  
+  exec { '/usr/bin/apt-get update':
+     alias       => 'updatedrivecloud',
+     require     => [ File['/etc/apt/sources.list.d/driveclient.list'], File['/etc/apt/trusted.gpg'] ],
+     subscribe   => [ File['/etc/apt/sources.list.d/driveclient.list'], File['/etc/apt/trusted.gpg'] ],
+     refreshonly => true;
+}
+
   package {'driveclient':
-    ensure  => present,
-    require => Yumrepo['drivesrvr'],
+    ensure  => latest,
+    require => Exec['updatedrivecloud'];
   }
-  # Not sure why, but it seems to always ask for
-  # permission to overwrite the bootstrap.json
-  # file first added a 'Y' to the parameters below
+
   exec {'driveclient --configure':
     command     => "/usr/local/bin/driveclient --configure -u ${cloudbackup::username} -k ${cloudbackup::api_key}",
     unless			=> "/bin/grep IsRegistered /etc/driveclient/bootstrap.json | /bin/grep -q true",	
