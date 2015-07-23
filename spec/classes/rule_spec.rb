@@ -2,16 +2,16 @@ require 'spec_helper'
 
 describe 'cloudbackup' do
   let(:title) { 'test'}
-  let(:params) { {:username => 'rackspace', :api_key => 'xxxxxxxxxx'} }  
-  let(:facts) { {:operatingsystem => ['CentOS','Fedora']}}
-  
+  let(:params) { {:username => 'rackspace', :api_key => 'xxxxxxxxxx'} }
+  let(:facts) { {:operatingsystem => ['Debian']}}
+
   it { should include_class('cloudbackup::install')}
   it { should include_class('cloudbackup::service')}
 
-  context "On a RedHat OS" do
+  context "On a Debian OS" do
     let :facts do
       {
-        :osfamily => 'RedHat'
+        :osfamily => 'Debian'
       }
     end
     it {
